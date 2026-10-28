@@ -18,7 +18,7 @@ class PlottingTool:
 
         # Used to switch between different graph structures without issue
         self.functions = {
-            "base": self.plot_edges_base()
+            "base": self.plot_edges_base
         }
 
     def generate_coordinates(self):
@@ -32,7 +32,7 @@ class PlottingTool:
             self.ax.plot(*zip(self.x0[i], self.x0[j]), lw=0.5)
 
     def plot(self):
-        self.functions[self.structure]
+        self.functions[self.structure]()
         self.ax.scatter(*self.x0.T)
         return self.fig, self.ax
 
