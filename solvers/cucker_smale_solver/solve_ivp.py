@@ -1,13 +1,13 @@
 import numpy as np
 from scipy.integrate import solve_ivp
+from scipy.spatial import distance
 from typing import Callable
 
 from models.cucker_smale.cucker_smale_setup import equations
 
-
+# Default psi: will probably need to experiment how to change this / penalize extreme distances
 def psi(r: np.ndarray) -> np.ndarray:
     return 1 / (1 + r**2) ** 0.25
-
 
 class CuckerSmaleSolver:
 
@@ -53,7 +53,9 @@ class CuckerSmaleSolver:
 
 
 if __name__ == "__main__":
-    x0 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=float)
-    v0 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=float)
+    x0 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [1,1,1]], dtype=float)
+    v0 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [2,2,2]], dtype=float)
 
-    solver = CuckerSmaleSolver(x0, v0).solve(10000, 50)
+    solver = CuckerSmaleSolver(x0, v0).solve(10000, 100) 
+    pairwise_distances = distance.squareform(distance.pdist(solver.v[-1], metric="euclidean"))
+    print(pairwise_distances)
