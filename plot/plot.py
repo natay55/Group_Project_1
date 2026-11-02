@@ -6,7 +6,7 @@ class PlottingTool:
 
     def __init__(self, low=0, high=100, d=3, agents=None, structure = "base"):
         self.low, self.high, self.d = low, high, d
-        self.agents = agents or np.random.randint(20, 40)
+        self.agents = agents or np.random.randint(20,40)
         self.x0, self.v0 = self.generate_coordinates()
         self.structure = structure
 
@@ -37,5 +37,5 @@ class PlottingTool:
         return self.fig, self.ax
 
 if __name__ == "__main__":
-    PlottingTool(d=2).plot()
+    PlottingTool(d=3).plot()
     plt.show()
