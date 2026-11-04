@@ -21,10 +21,10 @@ class PlottingTool:
             "base": self.plot_edges_base,
             "line": self.plot_edges_line, 
             "ring": self.plot_edges_ring,
-            "star": self.plot_edges_star,
-           # "cubic": self.plot_edges_cubic
+            "star": self.plot_edges_star
         }
 
+    # Generate random starting co-ordinates determined from a uniform distribution in the domain (0, 100)
     def generate_coordinates(self):
         shape = (self.agents, self.d)
         return (np.random.uniform(self.low, self.high, shape),
