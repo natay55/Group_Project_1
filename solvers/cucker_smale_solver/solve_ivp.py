@@ -62,6 +62,5 @@ class CuckerSmaleSolver:
 if __name__ == "__main__":
 
     solver = CuckerSmaleSolver().solve(10000, 100)
-    graphs = PlottingTool(x0 = solver.x0, v0 = solver.v0).plot()
     pairwise_distances = distance.squareform(distance.pdist(solver.v[-1], metric="euclidean"))
     print(pairwise_distances)
