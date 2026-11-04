@@ -4,10 +4,10 @@ from itertools import combinations
 
 class PlottingTool:
 
-    def __init__(self, low=0, high=100, d=3, agents=None, structure = "base"):
-        self.low, self.high, self.d = low, high, d
+    def __init__(self, x0: np.ndarray, v0: np.ndarray, d=3, agents=None, structure = "base"):
+        self.d = d
         self.agents = agents or np.random.randint(20, 40)
-        self.x0, self.v0 = self.generate_coordinates()
+        self.x0, self.v0 = x0, v0
         self.structure = structure
 
         if self.d == 3:
@@ -23,13 +23,7 @@ class PlottingTool:
             "ring": self.plot_edges_ring,
             "star": self.plot_edges_star
         }
-
-    # Generate random starting co-ordinates determined from a uniform distribution in the domain (0, 100)
-    def generate_coordinates(self):
-        shape = (self.agents, self.d)
-        return (np.random.uniform(self.low, self.high, shape),
-                np.random.uniform(self.low, self.high, shape))
-
+    
     # Base case for a weighted, undirected, complete graph (default structure)
     def plot_edges_base(self):
         for i, j in combinations(range(self.agents), 2):

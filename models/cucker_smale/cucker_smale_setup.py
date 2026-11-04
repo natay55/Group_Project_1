@@ -87,7 +87,6 @@ def equations(x: np.ndarray, v: np.ndarray, psi: Callable[[np.ndarray], np.ndarr
 
 if __name__ == "__main__":
 
-    # Initial test values - I randomly chose these
     v0 = np.array(([1,0,0], [0,1,0], [2,3,0]))
     x0 = np.array(([0,0,0], [0,1,0], [1,0,0]))
     psi = lambda r: 1/(1+r**2)

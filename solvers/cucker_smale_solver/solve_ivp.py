@@ -2,6 +2,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.spatial import distance
 from typing import Callable
+from plot.plot import PlottingTool
 
 from models.cucker_smale.cucker_smale_setup import equations
 
@@ -11,20 +12,26 @@ def psi(r: np.ndarray) -> np.ndarray:
 
 class CuckerSmaleSolver:
 
-    def __init__(self, x0: np.ndarray, v0: np.ndarray, psi: Callable = psi):
-        self.x0 = x0
-        self.v0 = v0
+    def __init__(self, low=0, high=100, psi: Callable = psi, d = 3, agents = None):
+        self.agents = agents or np.random.randint(20,40)
+        self.low, self.high, self.d = low, high, d
+        self.x0, self.v0 = self.generate_coordinates()
         self.psi = psi
-        self.N, self.d = x0.shape
         self.solution = None
+
+    # Generate random starting co-ordinates determined from a uniform distribution in the domain (0, 100)
+    def generate_coordinates(self):
+        shape = (self.agents, self.d)
+        return (np.random.uniform(self.low, self.high, shape),
+                np.random.uniform(self.low, self.high, shape))
 
     # solve_ivp only takes a flattened matrix, so this takes positions and velocities and puts it into one flattened matrix
     def pack(self, x: np.ndarray, v: np.ndarray) -> np.ndarray:
         return np.concatenate([x.ravel(), v.ravel()])
 
     def unpack(self, y: np.ndarray):
-        n = self.N * self.d
-        return y[:n].reshape(self.N, self.d), y[n:].reshape(self.N, self.d)
+        n = self.agents * self.d
+        return y[:n].reshape(self.agents, self.d), y[n:].reshape(self.agents, self.d)
 
     def ode(self, t: float, y: np.ndarray) -> np.ndarray:
         x, v = self.unpack(y)
@@ -43,19 +50,18 @@ class CuckerSmaleSolver:
 
     @property
     def x(self) -> np.ndarray:
-        n = self.N * self.d
-        return self.solution.y[:n].T.reshape(-1, self.N, self.d)
+        n = self.agents * self.d
+        return self.solution.y[:n].T.reshape(-1, self.agents, self.d)
 
     @property
     def v(self) -> np.ndarray:
-        n = self.N * self.d
-        return self.solution.y[n:].T.reshape(-1, self.N, self.d)
+        n = self.agents * self.d
+        return self.solution.y[n:].T.reshape(-1, self.agents, self.d)
 
 
 if __name__ == "__main__":
-    x0 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [1,1,1]], dtype=float)
-    v0 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [2,2,2]], dtype=float)
 
-    solver = CuckerSmaleSolver(x0, v0).solve(10000, 100) 
+    solver = CuckerSmaleSolver().solve(10000, 100)
+    graphs = PlottingTool(x0 = solver.x0, v0 = solver.v0).plot()
     pairwise_distances = distance.squareform(distance.pdist(solver.v[-1], metric="euclidean"))
     print(pairwise_distances)
