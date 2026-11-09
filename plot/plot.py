@@ -6,7 +6,7 @@ class PlottingTool:
 
     def __init__(self, x0: np.ndarray, v0: np.ndarray, d=3, agents=None, structure = "base"):
         self.d = d
-        self.agents = agents or np.random.randint(20, 40)
+        self.agents = agents or np.random.randint(20,40)
         self.x0, self.v0 = x0, v0
         self.structure = structure
 
@@ -52,5 +52,9 @@ class PlottingTool:
         return self.fig, self.ax
 
 if __name__ == "__main__":
-    PlottingTool(d=3, structure="star").plot()
+    x0, v0 = (
+        np.random.uniform(0, 100, size=(30,3)),
+        np.random.uniform(0, 100, size=(30,3))
+    )
+    PlottingTool(d=3, x0 = x0, v0 = v0, structure="base", agents=30).plot()
     plt.show()
