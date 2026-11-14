@@ -12,18 +12,12 @@ def psi(r: np.ndarray) -> np.ndarray:
 
 class CuckerSmaleSolver:
 
-    def __init__(self, low=0, high=100, psi: Callable = psi, d = 3, agents = None):
+    def __init__(self, x0, v0, psi: Callable = psi, d = 3, agents = 20, A_init = None):
         self.agents = agents or np.random.randint(20,40)
-        self.low, self.high, self.d = low, high, d
-        self.x0, self.v0 = self.generate_coordinates()
+        self.x0, self.v0, self.d = x0, v0, d
         self.psi = psi
         self.solution = None
-
-    # Generate random starting co-ordinates determined from a uniform distribution in the domain (0, 100)
-    def generate_coordinates(self):
-        shape = (self.agents, self.d)
-        return (np.random.uniform(self.low, self.high, shape),
-                np.random.uniform(self.low, self.high, shape))
+        self.A_init = A_init
 
     # solve_ivp only takes a flattened matrix, so this takes positions and velocities and puts it into one flattened matrix
     def pack(self, x: np.ndarray, v: np.ndarray) -> np.ndarray:
@@ -35,7 +29,7 @@ class CuckerSmaleSolver:
 
     def ode(self, t: float, y: np.ndarray) -> np.ndarray:
         x, v = self.unpack(y)
-        dx, dv = equations(x, v, self.psi)
+        dx, dv = equations(x, v, self.psi, self.A_init)
         return self.pack(dx, dv)
 
     def solve(self, t_end: float, n_points: int):
@@ -63,4 +57,3 @@ if __name__ == "__main__":
 
     solver = CuckerSmaleSolver().solve(10000, 100)
     pairwise_distances = distance.squareform(distance.pdist(solver.v[-1], metric="euclidean"))
-    print(pairwise_distances)

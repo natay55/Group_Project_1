@@ -2,9 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from itertools import combinations
 
+np.random.seed(100)
+
 class PlottingTool:
 
-    def __init__(self, x0: np.ndarray, v0: np.ndarray, d=3, agents=None, structure = "base"):
+    def __init__(self, x0: np.ndarray, v0: np.ndarray, d=3, agents=None, structure="base"):
         self.d = d
         self.agents = agents or np.random.randint(20,40)
         self.x0, self.v0 = x0, v0
@@ -16,45 +18,52 @@ class PlottingTool:
         else:
             self.fig, self.ax = plt.subplots()
 
-        # Used to switch between different graph structures without issue
         self.functions = {
             "base": self.plot_edges_base,
-            "line": self.plot_edges_line, 
+            "line": self.plot_edges_line,
             "ring": self.plot_edges_ring,
             "star": self.plot_edges_star
         }
-    
-    # Base case for a weighted, undirected, complete graph (default structure)
+
+        self.A_init = np.zeros((self.agents, self.agents))
+
     def plot_edges_base(self):
         for i, j in combinations(range(self.agents), 2):
+            self.A_init[i,j] = self.A_init[j,i] = 1
             self.ax.plot(*zip(self.x0[i], self.x0[j]), lw=0.5)
+        return self.A_init
 
-    # Line graph - birds connected to, at most, two nodes
     def plot_edges_line(self):
         for i in range(self.agents - 1):
+            self.A_init[i,i+1] = self.A_init[i+1,i] = 1
             self.ax.plot(*zip(self.x0[i], self.x0[i + 1]), lw=0.5)
+        return self.A_init
 
-    # Ring graphs - birds connected to, at most, two nodes, but the first and last nodes are also connected
     def plot_edges_ring(self):
         for i in range(self.agents):
+            self.A_init[i, (i+1)%self.agents] = self.A_init[(i+1)%self.agents, i] = 1
             self.ax.plot(*zip(self.x0[i], self.x0[(i + 1) % self.agents]), lw=0.5)
+        return self.A_init
 
-    # Star graph - one bird connected to all other birds, but the other birds are not connected to each other
     def plot_edges_star(self):
-        center = self.x0[self.agents // 2]
+        center_index = self.agents // 2
+        center = self.x0[center_index]
         for i in range(self.agents):
             if i != self.agents // 2:
+                self.A_init[center_index, i] = self.A_init[i, center_index] = 1
                 self.ax.plot(*zip(center, self.x0[i]), lw=0.5)
+        return self.A_init
 
     def plot(self):
-        self.functions[self.structure]()
+        A = self.functions[self.structure]()
         self.ax.scatter(*self.x0.T)
-        return self.fig, self.ax
+        return self.fig, self.ax, A
+
 
 if __name__ == "__main__":
     x0, v0 = (
-        np.random.uniform(0, 100, size=(30,3)),
-        np.random.uniform(0, 100, size=(30,3))
+        np.random.normal(0, 1, size=(20,3)),
+        np.random.normal(0, 1, size=(20,3))
     )
-    PlottingTool(d=3, x0 = x0, v0 = v0, structure="base", agents=30).plot()
+    fig, ax, A_init = PlottingTool(d=3, x0=x0, v0=v0, structure="star", agents=20).plot()
     plt.show()
