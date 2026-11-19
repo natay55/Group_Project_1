@@ -59,7 +59,6 @@ class PlottingTool:
         self.ax.scatter(*self.x0.T)
         return self.fig, self.ax, A
 
-
 if __name__ == "__main__":
     x0, v0 = (
         np.random.normal(0, 1, size=(20,3)),
